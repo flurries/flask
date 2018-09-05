@@ -2,6 +2,7 @@ from flask import  Flask
 from  flask_script import Manager
 from flask_session import Session
 
+from app.house_views import house_blueprint
 from app.models import db
 from app.user_views import user_blueprint
 import redis
@@ -13,6 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@127.0.0.1:3
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = Flask
 
 app.register_blueprint(blueprint=user_blueprint, url_prefix='/user')
+app.register_blueprint(blueprint=house_blueprint, url_prefix='/house')
 
 
 #  配置session

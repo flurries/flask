@@ -13,19 +13,20 @@ function getCookie(name) {
 }
 
 // 提交图片的post
-
 $(document).ready(function () {
     $('#form-avatar').submit(function (e) {
         // 取消刷新
         e.preventDefault()
         $(this).ajaxSubmit({
+        // var avatar = $('.btn-success').val()
+        // $.ajax({
             url: '/user/profile/',
             dataType:'json',
+            // data:{'avatar': avatar},
             type: 'PATCH',
             success:function (data) {
                 if(data.code == '200'){
                     $('#user-avatar').attr('src', '/static/media/' + data.img_avatar)
-
                 }
             }
         })
@@ -37,17 +38,19 @@ $(document).ready(function () {
 $(document).ready(function () {
     $('#form-name').submit(function (e) {
         // 取消刷新
-
         e.preventDefault()
-        $(this).ajaxSubmit({
+        // $(this).ajaxSubmit({
+        var name = $('#user-name').val()
+        $.ajax({
             url: '/user/profile_name/',
             dataType:'json',
             type: 'PATCH',
+            data:{'name': name},
             success:function (data) {
                 if(data.code == '1010'){
-                    $('.error-msg').css("display","block");
+                    $('.error-msg').show()
                 }else if(data.code == '200'){
-                    $('.popup_con').css("display","block");
+                    $('.popup_con').show()
                     showSuccessMsg()
                 }
             }

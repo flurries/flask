@@ -42,12 +42,12 @@
                 </li>
                 <li>
                     <div class="menu-title menu-radius">
-                        <a href="/auth.html"><h3>实名认证</h3></a>
+                        <a href="{{ url_for('user.auth') }}"><h3>实名认证</h3></a>
                     </div>
                 </li>
                 <li>
                     <div class="menu-title menu-radius">
-                        <a href="/myhouse.html"><h3>我的房源</h3></a>
+                        <a href="{{ url_for('house.my_house') }}"><h3>我的房源</h3></a>
                     </div>
                 </li>
                 <li>
@@ -57,7 +57,7 @@
                 </li>
                 <li>
                     <div class="menu-title menu-radius">
-                        <a href="{{ url_for('user.logout') }}" ; >退出</a>
+                        <a onclick="logout()" ; >退出</a>
                     </div>
                 </li>
             </ul>

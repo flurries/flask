@@ -1,6 +1,7 @@
+import os
 import random
 import re
-import os
+from functools import wraps
 
 from flask import Blueprint, request, render_template, jsonify, session, redirect, url_for
 
@@ -8,18 +9,18 @@ from app.models import db, User
 from utils import status_code
 from utils.setting import UPLOAD_DIR
 
-
-
 # 定义蓝图
 user_blueprint = Blueprint('user', __name__)
 
-#定义一个修饰器用来审查cookie中的session_id
+
+# 定义一个修饰器用来审查cookie中的session_id
 def log(func):
-    def wrapper(*args, **kw):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         user = session.get('user_id')
         if user is None:
             return redirect(url_for('user.login'))
-        return func(*args, **kw)
+        return func(*args, **kwargs)
     return wrapper
 
 
@@ -117,8 +118,10 @@ def my_login():
 def my():
     return render_template('my.html')
 
+
 #  进入个人主页面后自动回调的个人信息
 @user_blueprint.route('my_info/', methods=['GET'])
+@log
 def my_info():
     # 获取在login页面登录时，写在session中的user_ia
     user_id = session['user_id']
@@ -133,9 +136,10 @@ def my_info():
 
 # 退出登录，清空session中的值，反向解析login页面
 @user_blueprint.route('logout/', methods=['GET'])
+@log
 def logout():
     session.clear()
-    return redirect(url_for('user.login'))
+    return jsonify(code=status_code.OK)
 
 
 # 头像上传修改要页面
@@ -166,19 +170,69 @@ def my_profile():
 # 修改用户名
 @user_blueprint.route('profile_name/', methods=['PATCH'])
 def my_profile_name():
-    # 获得头像文件
+    # 获得用户名
     name = request.form.get('name')
     user_id = session.get('user_id')
     # 是否输入内容
     if name:
-        user = User.query.filter(User.name==name).all()
+        user = User.query.filter(User.name == name).all()
         # 判断用户名是否已经注册
         if user:
-            return jsonify(status_code.USER_REGISTER_USERNAME_IS_EXISTS)
+            # 返回已经注册
+            return jsonify(status_code.USER_PROFILE_USERNAME_IS_EXISTS)
         else:
+            # 用户名可以注册
             user = User.query.get(user_id)
             user.name = name
             user.add_update()
             return jsonify(code=status_code.OK)
     else:
-        return jsonify(status_code.USER_REGISTER_PARAMS_NOT_EXISTS)
+        # 用户并没有输入
+        return jsonify(status_code.USER_PROFILE_PARAMS_NOT_EXISTS)
+
+
+# 进入实名认证
+@user_blueprint.route('auth/', methods=['GET'])
+def auth():
+    return render_template('auth.html')
+
+
+# 提交实名
+@user_blueprint.route('auth/', methods=['PATCH'])
+def my_auth():
+    # 获取姓名身份证号码
+    real_name = request.form.get('real_name')
+    id_card = request.form.get('id_card')
+    # 校验
+    if not all([real_name, id_card]):
+        return jsonify(status_code.USER_AUTH_PARAMS_NOT_VALID)
+    if not re.match(r'^[1-9]\d{16}[1-9X]$', id_card):
+        return jsonify(status_code.USER_AUTH_ID_CARD_IS_NOT_VALID)
+    # 修改信息
+    user = User.query.get(session['user_id'])
+    user.id_card=id_card
+    user.id_name=real_name
+    user.add_update()
+    return jsonify(code=status_code.OK)
+
+
+@user_blueprint.route('auth_info/', methods=['GET'])
+@log
+def auth_info():
+    user = User.query.get(session['user_id'])
+    user_info = user.to_auth_dict()
+    return jsonify(user_info=user_info, code=status_code.OK)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

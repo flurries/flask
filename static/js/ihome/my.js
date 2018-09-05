@@ -1,7 +1,7 @@
 function logout() {
-    $.get("/api/logout", function(data){
-        if (0 == data.errno) {
-            location.href = "/";
+    $.get("/user/logout/", function(data){
+        if (data.code == '200') {
+            location.href = "/user/login/";
         }
     })
 }
