@@ -103,37 +103,38 @@ class House(BaseModel, db.Model):
 
     def to_dict(self):
         return {
-            'id':self.id,
-            'title':self.title,
+            'id': self.id,
+            'title': self.title,
             'image': self.index_image_url if self.index_image_url else '',
-            'area':self.area.name,
-            'price':self.price,
-            'create_time':self.create_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'area': self.area.name,
+            'price': self.price,
+            'create_time': self.create_time.strftime('%Y-%m-%d %H:%M:%S'),
             # 'avatar':current_app.config['QINIU_URL']+self.user.avatar if self.user.avatar else '',
-            'room':self.room_count,
-            'order_count':self.order_count,
-            'address':self.address
+            'room': self.room_count,
+            'order_count': self.order_count,
+            'address': self.address
         }
 
     def to_full_dict(self):
         return {
-            'id':self.id,
-            'user_avatar':self.user.avatar if self.user.avatar else '',
-            'user_name':self.user.name,
+            'index_image_url': self.index_image_url,
+            'id' :self.id,
+            'user_avatar': self.user.avatar if self.user.avatar else '',
+            'user_name': self.user.name,
             'title': self.title,
-            'price':self.price,
-            'address':self.area.name+self.address,
-            'room_count':self.room_count,
-            'acreage':self.acreage,
-            'unit':self.unit,
-            'capacity':self.capacity,
-            'beds':self.beds,
-            'deposit':self.deposit,
-            'min_days':self.min_days,
-            'max_days':self.max_days,
-            'order_count':self.order_count,
-            'images':[image.url for image in self.images],
-            'facilities':[facility.to_dict() for facility in self.facilities],
+            'price': self.price,
+            'address': self.area.name+self.address,
+            'room_count': self.room_count,
+            'acreage': self.acreage,
+            'unit': self.unit,
+            'capacity': self.capacity,
+            'beds': self.beds,
+            'deposit': self.deposit,
+            'min_days': self.min_days,
+            'max_days': self.max_days,
+            'order_count': self.order_count,
+            'images': [image.url for image in self.images],
+            'facilities': [facility.to_dict() for facility in self.facilities],
         }
 
 
@@ -187,7 +188,7 @@ class Area(BaseModel, db.Model):
 class Order(BaseModel,db.Model):
     __tablename__ = "ihome_order"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("ihome_user.id"), nullable=False)
     house_id = db.Column(db.Integer, db.ForeignKey("ihome_house.id"), nullable=False)
     begin_date = db.Column(db.DateTime, nullable=False)  # 入住时间
@@ -210,14 +211,14 @@ class Order(BaseModel,db.Model):
 
     def to_dict(self):
         return {
-            'order_id':self.id,
-            'house_title':self.house.title,
-            'image':self.house.index_image_url if self.house.index_image_url else '',
-            'create_date':self.create_time.strftime('%Y-%m-%d'),
-            'begin_date':self.begin_date.strftime('%Y-%m-%d'),
-            'end_date':self.end_date.strftime('%Y-%m-%d'),
-            'amount':self.amount,
+            'order_id': self.id,
+            'house_title': self.house.title,
+            'image': self.house.index_image_url if self.house.index_image_url else '',
+            'create_date': self.create_time.strftime('%Y-%m-%d'),
+            'begin_date': self.begin_date.strftime('%Y-%m-%d'),
+            'end_date': self.end_date.strftime('%Y-%m-%d'),
+            'amount':  self.amount,
             'days':self.days,
-            'status':self.status,
-            'comment':self.comment
+            'status': self.status,
+            'comment': self.comment
         }

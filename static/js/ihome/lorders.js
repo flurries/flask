@@ -15,14 +15,88 @@ function getCookie(name) {
 }
 
 $(document).ready(function(){
-    $('.modal').on('show.bs.modal', centerModals);      //当模态框出现的时候
+
+    $.get('/order/lorder-info',function (data) {
+        console.log(data)
+        if(data.code == '200'){
+            var lorder_html = template('lorder_temp_script', {lorders: data.lorders_info})
+        }
+        $('.orders-list').html(lorder_html)
+        $('.modal').on('show.bs.modal', centerModals);      //当模态框出现的时候
     $(window).on('resize', centerModals);
-    $(".order-accept").on("click", function(){
-        var orderId = $(this).parents("li").attr("order-id");
-        $(".modal-accept").attr("order-id", orderId);
+
+     $(".order-accept").on("click", function(){
+         var orderId = $(this).parents("li").attr("order-id");
+         $(".modal-accept").attr("order-id", orderId);
     });
     $(".order-reject").on("click", function(){
         var orderId = $(this).parents("li").attr("order-id");
         $(".modal-reject").attr("order-id", orderId);
     });
+
+    })
+
+    $(".modal-accept").on("click", function(){
+         alert('sadsad')
+        var order_id = $(".modal-accept").attr("order-id");
+        var status = 'WAIT_PAYMENT'
+         $.ajax({
+            url:'/order/o_status/',
+            data:{'order_id':order_id,'status':status},
+            dataType:'json',
+            type:'PATCH',
+            success:function(data){
+            console.log(data)
+                location.reload()
+            }
+
+         })
+    });
+
+     $('.modal-reject').on('click', function () {
+
+         var order_id = $('.modal-reject').attr('order-id')
+         var status = 'REJECTED'
+         var comment = $('#reject-reason').val()
+         alert('sadas')
+         $.ajax({
+              url:'/order/o_status/',
+            data:{'order_id':order_id,'status':status,'comment':comment},
+            dataType:'json',
+            type:'PATCH',
+             success:function (data) {
+                  location.reload()
+
+             }
+
+         })
+
+     })
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

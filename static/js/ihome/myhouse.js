@@ -9,7 +9,7 @@ $(document).ready(function(e){
             $('.auth-warn').hide()
             $('#houses-list').show()
             for (var i = 0; i < data.house_info.length; i++) {
-                var li = '<li><a href="/detail.html?id=&f=my">'
+                var li = '<li><a href="/house/detail/?id='+ data.house_info[i].id +'">'
                 li += '<div class="house-title"><h3>房屋ID:1 —— ' + data.house_info[i].title + '</h3>'
                 li += '</div><div class="house-content">'
                 li += '<img src="/static/media/' + data.house_info[i].image + '">'

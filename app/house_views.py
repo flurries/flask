@@ -116,3 +116,49 @@ def new_house_img():
     h_image.url = image_url
     h_image.add_update()
     return jsonify(code=status_code.OK, image_url=image_url)
+
+
+@house_blueprint.route('detail/', methods=['GET'])
+def datail():
+    return render_template('detail.html')
+
+
+@house_blueprint.route('detail/<int:id>/',methods=['GET'])
+def house_detail(id):
+    house=House.query.get(id)
+    return jsonify(code=status_code.OK,house_detail=house.to_full_dict())
+
+
+@house_blueprint.route('booking/',methods=['GET'])
+def booking():
+    return render_template('booking.html')
+
+
+@house_blueprint.route('index/', methods=['GET'])
+def index():
+    return render_template('index.html')
+
+
+@house_blueprint.route('hindex/', methods=['GET'])
+def my_index():
+    # 获取登录用户信息
+    username = ''
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        username = user.name
+    # 轮播图
+    houses = House.query.filter(House.index_image_url!='').order_by('-id')[:3]
+    house_info = [house.to_dict() for house in houses]
+    return jsonify(code=status_code.OK, house_info=house_info,username=username)
+
+
+
+
+
+
+
+
+
+
+
+

@@ -58,20 +58,8 @@ function goToSearchPage(th) {
 }
 
 $(document).ready(function(){
-    $(".top-bar>.register-login").show();
-    var mySwiper = new Swiper ('.swiper-container', {
-        loop: true,
-        autoplay: 2000,
-        autoplayDisableOnInteraction: false,
-        pagination: '.swiper-pagination',
-        paginationClickable: true
-    }); 
-    $(".area-list a").click(function(e){
-        $("#area-btn").html($(this).html());
-        $(".search-btn").attr("area-id", $(this).attr("area-id"));
-        $(".search-btn").attr("area-name", $(this).html());
-        $("#area-modal").modal("hide");
-    });
+
+
     $('.modal').on('show.bs.modal', centerModals);      //当模态框出现的时候
     $(window).on('resize', centerModals);               //当窗口大小变化的时候
     $("#start-date").datepicker({
@@ -84,4 +72,50 @@ $(document).ready(function(){
         var date = $(this).datepicker("getFormattedDate");
         $("#start-date-input").val(date);
     });
+    $.get('/house/area_facility/', function (data) {
+        if (data.code == '200'){
+            for(var i = 0 ; i < data.area_info.length; i++){
+                var area_a =  '<a href="#" area-id="'+ data.area_info[i].id +'">'+ data.area_info[i].name +'</a>'
+                $('.area-list').append(area_a)
+            }
+
+        $(".area-list a").click(function(e){
+        $("#area-btn").html($(this).html());
+        $(".search-btn").attr("area-id", $(this).attr("area-id"));
+        $(".search-btn").attr("area-name", $(this).html());
+        $("#area-modal").modal("hide");
+    });
+}
+    })
+    $.get('/house/hindex/',function (data) {
+        if (data.code == '200'){
+            console.log(data)
+            if(data.username!=''){
+                $('.user-info').show()
+                $('.register-login').hide()
+                $('#user_username').html(data.username)
+            }else{
+                $('.user-info').hide()
+                $('.register-login').show()
+            }
+            for (var i=0; i<data.house_info.length; i++){
+                
+                var banner =  '<div class="swiper-slide">'
+                banner += '<a href="#"><img src="/static/media/'+ data.house_info[i].image +'"></a>'
+                banner += '<div class="slide-title">'+ data.house_info[i].title +'</div> </div>'
+                $('.swiper-wrapper').append(banner)
+
+            }
+
+            var mySwiper = new Swiper ('.swiper-container', {
+                loop: true,
+                autoplay: 2000,
+                autoplayDisableOnInteraction: false,
+                pagination: '.swiper-pagination',
+                paginationClickable: true
+            });
+
+        }
+    })
+
 })
